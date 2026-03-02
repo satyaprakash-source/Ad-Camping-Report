@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meta Ads Campaign Dashboard · Feb 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060A12;
+    --surface: #0D1520;
+    --surface2: #111D2E;
+    --border: rgba(99,179,237,0.12);
+    --blue: #3B82F6;
+    --cyan: #22D3EE;
+    --green: #10B981;
+    --amber: #F59E0B;
+    --orange: #F97316;
+    --text: #E2EAF4;
+    --muted: #637899;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.6;
+  }
+
+  .grid-bg {
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+
+  .orb {
+    position: fixed; border-radius: 50%;
+    filter: blur(130px); pointer-events: none; z-index: 0;
+  }
+  .orb1 { width: 700px; height: 700px; background: rgba(59,130,246,0.07); top: -250px; right: -150px; }
+  .orb2 { width: 500px; height: 500px; background: rgba(16,185,129,0.05); bottom: 0; left: -150px; }
+
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 36px 32px 48px;
+  }
+
+  /* HEADER */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 28px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.28);
+    border-radius: 100px;
+    padding: 4px 14px 4px 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10.5px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--cyan);
+    margin-bottom: 14px;
+  }
+  .badge-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green);
+    animation: blink 2s infinite;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px; font-weight: 800;
+    line-height: 1.08; letter-spacing: -0.025em;
+    background: linear-gradient(130deg, #E2EAF4 20%, #6EB0E8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .sub {
+    margin-top: 7px; font-size: 13px;
+    color: var(--muted); font-weight: 300;
+    letter-spacing: 0.01em;
+  }
+
+  .header-meta { text-align: right; }
+  .meta-cycle {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 700; color: var(--text);
+    margin-bottom: 4px;
+  }
+  .meta-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--muted);
+    letter-spacing: 0.07em; text-transform: uppercase;
+  }
+  .meta-product {
+    margin-top: 6px; font-size: 12px; color: var(--muted);
+  }
+
+  /* HERO */
+  .hero { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 20px; }
+
+  .hcard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px 20px 18px;
+    position: relative; overflow: hidden;
+    opacity: 0; transform: translateY(18px);
+    animation: up .55s forwards;
+  }
+  .hcard::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    border-radius: 14px 14px 0 0;
+    background: var(--accent);
+  }
+  .hcard-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px;
+  }
+  .hcard-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 34px; font-weight: 800;
+    letter-spacing: -0.02em; line-height: 1;
+    color: var(--vcolor, var(--text));
+  }
+  .hcard-note {
+    margin-top: 9px; font-size: 11.5px; color: var(--muted);
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .pill {
+    display: inline-block; border-radius: 4px; padding: 1px 7px;
+    font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  }
+  .pill-g { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: var(--green); }
+  .pill-b { background: rgba(59,130,246,0.13); border: 1px solid rgba(59,130,246,0.28); color: var(--cyan); }
+  .pill-a { background: rgba(245,158,11,0.13); border: 1px solid rgba(245,158,11,0.28); color: var(--amber); }
+
+  /* ROW GRIDS */
+  .row2 { display: grid; grid-template-columns: 1.45fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+
+  /* PANEL */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 22px;
+    opacity: 0; transform: translateY(18px);
+    animation: up .55s forwards;
+  }
+  .panel-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11.5px; font-weight: 700;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .panel-title::after { content: ''; flex:1; height:1px; background: var(--border); }
+
+  /* FUNNEL */
+  .f-step { margin-bottom: 3px; }
+  .f-labels {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--muted); margin-bottom: 4px;
+  }
+  .f-labels b { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--text); }
+  .f-track { height: 9px; background: rgba(255,255,255,0.05); border-radius: 100px; overflow: hidden; margin-bottom: 2px; }
+  .f-fill { height: 100%; border-radius: 100px; width: 0; transition: width 1.4s cubic-bezier(.4,0,.2,1); }
+  .f-arrow {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    color: rgba(99,179,237,0.35); text-align: center;
+    padding: 3px 0 3px 10px; letter-spacing: 0.04em;
+  }
+
+  /* DONUT */
+  .donut-wrap { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .donut-pos { position: relative; width: 148px; height: 148px; }
+  .donut-svg { transform: rotate(-90deg); }
+  .donut-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+  }
+  .dc-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--green); line-height: 1; }
+  .dc-sub { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 3px; }
+  .legend { width: 100%; display: flex; flex-direction: column; gap: 9px; }
+  .leg-row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+  .leg-l { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+  .leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .leg-v { font-family: 'DM Mono', monospace; font-size: 12.5px; font-weight: 500; color: var(--text); }
+
+  /* KPI TABLE */
+  .kpi-tbl { width: 100%; border-collapse: collapse; }
+  .kpi-tbl tr { border-bottom: 1px solid var(--border); }
+  .kpi-tbl tr:last-child { border-bottom: none; }
+  .kpi-tbl td { padding: 9px 0; font-size: 12.5px; vertical-align: middle; }
+  .kpi-tbl td:first-child { color: var(--muted); font-size: 12px; }
+  .kpi-tbl td:last-child { text-align: right; font-family: 'DM Mono', monospace; font-weight: 500; color: var(--text); }
+  .sdot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 7px; vertical-align: middle; }
+
+  /* SALE CHANCES */
+  .sc-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 0; border-bottom: 1px solid var(--border);
+  }
+  .sc-item:last-of-type { border-bottom: none; }
+  .sc-num {
+    font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800;
+    color: var(--amber); opacity: 0.22; width: 28px; flex-shrink: 0; line-height: 1;
+  }
+  .sc-info { flex: 1; }
+  .sc-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .sc-desc { font-size: 11px; color: var(--muted); }
+  .sc-right { text-align: right; }
+  .sc-val { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--amber); }
+  .sc-tag {
+    display: inline-block; margin-top: 3px;
+    background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 4px; padding: 1px 7px;
+    font-family: 'DM Mono', monospace; font-size: 9.5px; color: var(--amber);
+  }
+  .sc-total {
+    margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .sc-total-label { font-size: 12px; color: var(--muted); }
+  .sc-total-val { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--amber); }
+
+  /* SCALE BARS */
+  .bars-wrap { display: flex; align-items: flex-end; gap: 8px; height: 145px; padding-top: 10px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; height: 100%; justify-content: flex-end; }
+  .bar-body {
+    width: 100%; border-radius: 6px 6px 0 0;
+    height: 0; transition: height 1.5s cubic-bezier(.4,0,.2,1);
+    position: relative; min-height: 0;
+  }
+  .bar-tip {
+    position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+    font-family: 'DM Mono', monospace; font-size: 9px; color: var(--cyan); white-space: nowrap;
+  }
+  .bar-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); white-space: nowrap; }
+  .bars-note { text-align: center; margin-top: 10px; font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 0.04em; }
+
+  /* CPA GAUGE */
+  .gauge-shell { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .gauge-pos { position: relative; width: 188px; height: 106px; }
+  .gauge-val-abs { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); text-align: center; }
+  .gv-num { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; color: var(--green); line-height: 1; }
+  .gv-label { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .bench-rows { width: 100%; display: flex; flex-direction: column; gap: 9px; }
+  .br { display: flex; align-items: center; gap: 10px; }
+  .br-name { font-size: 11.5px; color: var(--muted); width: 110px; flex-shrink: 0; }
+  .br-track { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: hidden; }
+  .br-fill { height: 100%; border-radius: 100px; width: 0; transition: width 1.5s cubic-bezier(.4,0,.2,1); }
+  .br-val { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; width: 46px; text-align: right; flex-shrink: 0; }
+
+  /* FOOTER */
+  .footer {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+  }
+  .fstat { text-align: center; padding: 18px 10px; border-right: 1px solid var(--border); }
+  .fstat:last-child { border-right: none; }
+  .fval { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; line-height: 1; color: var(--text); }
+  .flabel { font-family: 'DM Mono', monospace; font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 5px; }
+
+  @keyframes up { to { opacity: 1; transform: translateY(0); } }
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.25; } }
+
+  .hcard:nth-child(1) { animation-delay:.08s; --accent: linear-gradient(90deg,#10B981,#34D399); --vcolor: #10B981; }
+  .hcard:nth-child(2) { animation-delay:.18s; --accent: linear-gradient(90deg,#3B82F6,#22D3EE); --vcolor: #22D3EE; }
+  .hcard:nth-child(3) { animation-delay:.28s; --accent: linear-gradient(90deg,#10B981,#6EE7B7); --vcolor: #10B981; }
+  .hcard:nth-child(4) { animation-delay:.38s; --accent: linear-gradient(90deg,#F59E0B,#FCD34D); --vcolor: #F59E0B; }
+  .r2p1 { animation-delay:.42s; } .r2p2 { animation-delay:.52s; } .r2p3 { animation-delay:.62s; }
+  .r3p1 { animation-delay:.48s; } .r3p2 { animation-delay:.58s; } .r3p3 { animation-delay:.68s; }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div>
+      <div class="badge"><span class="badge-dot"></span>Campaign Report · Verified Data</div>
+      <h1>Meta Ads Performance<br>Dashboard</h1>
+      <p class="sub">Lead Generation Campaign &nbsp;·&nbsp; Full-Funnel ROI Analysis</p>
+    </div>
+    <div class="header-meta">
+      <div class="meta-cycle">February 2026</div>
+      <div class="meta-id">Campaign Cycle · META-LG-FEB-2026</div>
+      <div class="meta-product">Product: ₹2,499 &nbsp;·&nbsp; Enrollment</div>
+    </div>
+  </header>
+
+  <!-- HERO KPIs -->
+  <div class="hero">
+    <div class="hcard">
+      <div class="hcard-label">Return on Ad Spend</div>
+      <div class="hcard-val" id="v-roas">0x</div>
+      <div class="hcard-note"><span class="pill pill-g">↑ 4× Benchmark</span><span>Industry avg: 2–4×</span></div>
+    </div>
+    <div class="hcard">
+      <div class="hcard-label">Return on Investment</div>
+      <div class="hcard-val" id="v-roi">0%</div>
+      <div class="hcard-note"><span class="pill pill-b">ELITE TIER</span><span>Net profit ₹4,699.61</span></div>
+    </div>
+    <div class="hcard">
+      <div class="hcard-label">Confirmed Revenue</div>
+      <div class="hcard-val" id="v-rev">₹0</div>
+      <div class="hcard-note"><span class="pill pill-g">2 Closed</span><span>₹2,499 per enrollment</span></div>
+    </div>
+    <div class="hcard">
+      <div class="hcard-label">Total Ad Spend</div>
+      <div class="hcard-val">₹298.39</div>
+      <div class="hcard-note"><span class="pill pill-a">CPA ₹149.20</span><span>Benchmark: ₹500–₹2,000</span></div>
+    </div>
+  </div>
+
+  <!-- ROW 2 -->
+  <div class="row2">
+
+    <!-- FUNNEL -->
+    <div class="panel r2p1">
+      <div class="panel-title">Conversion Funnel</div>
+      <div class="f-step">
+        <div class="f-labels"><span>Impressions</span><b>29,506</b></div>
+        <div class="f-track"><div class="f-fill" style="background:linear-gradient(90deg,#3B82F6,#60A5FA)" data-w="100"></div></div>
+      </div>
+      <div class="f-arrow">↓ 90% reach efficiency · frequency 1.11×</div>
+      <div class="f-step">
+        <div class="f-labels"><span>Unique Reach</span><b>26,550</b></div>
+        <div class="f-track"><div class="f-fill" style="background:linear-gradient(90deg,#3B82F6,#22D3EE)" data-w="90"></div></div>
+      </div>
+      <div class="f-arrow">↓ 0.62% CTR · Cost ₹1.63 per view</div>
+      <div class="f-step">
+        <div class="f-labels"><span>Landing Page Views</span><b>183</b></div>
+        <div class="f-track"><div class="f-fill" style="background:linear-gradient(90deg,#22D3EE,#10B981)" data-w="44"></div></div>
+      </div>
+      <div class="f-arrow">↓ 2.19% qualified as sale chances</div>
+      <div class="f-step">
+        <div class="f-labels"><span>Sale Chances (Hot Prospects)</span><b>4</b></div>
+        <div class="f-track"><div class="f-fill" style="background:linear-gradient(90deg,#F59E0B,#FCD34D)" data-w="18"></div></div>
+      </div>
+      <div class="f-arrow">↓ 50% close rate · 2 of 4 converted</div>
+      <div class="f-step">
+        <div class="f-labels"><span>Confirmed Sales</span><b>2 Enrolled</b></div>
+        <div class="f-track"><div class="f-fill" style="background:linear-gradient(90deg,#10B981,#6EE7B7)" data-w="8"></div></div>
+      </div>
+    </div>
+
+    <!-- DONUT -->
+    <div class="panel r2p2">
+      <div class="panel-title">Revenue Breakdown</div>
+      <div class="donut-wrap">
+        <div class="donut-pos">
+          <svg class="donut-svg" width="148" height="148" viewBox="0 0 148 148">
+            <circle cx="74" cy="74" r="55" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="18"/>
+            <circle cx="74" cy="74" r="55" fill="none" stroke="#10B981" stroke-width="18"
+              stroke-dasharray="0 345.6" id="d1"
+              style="transition:stroke-dasharray 1.5s cubic-bezier(.4,0,.2,1)"/>
+            <circle cx="74" cy="74" r="55" fill="none" stroke="#F59E0B" stroke-width="18"
+              stroke-dasharray="0 345.6" id="d2"
+              style="transition:stroke-dasharray 1.5s .25s cubic-bezier(.4,0,.2,1)"/>
+          </svg>
+          <div class="donut-center">
+            <div class="dc-val">₹4,998</div>
+            <div class="dc-sub">Confirmed</div>
+          </div>
+        </div>
+        <div class="legend">
+          <div class="leg-row">
+            <div class="leg-l"><div class="leg-dot" style="background:#10B981"></div>Confirmed Revenue</div>
+            <div class="leg-v">₹4,998</div>
+          </div>
+          <div class="leg-row">
+            <div class="leg-l"><div class="leg-dot" style="background:#F59E0B"></div>Sale Chances Max Value</div>
+            <div class="leg-v">₹9,996</div>
+          </div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px;padding-left:16px;font-style:italic;">*4 prospects × ₹2,499 at full conversion</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI TABLE -->
+    <div class="panel r2p3">
+      <div class="panel-title">Campaign Metrics</div>
+      <table class="kpi-tbl">
+        <tr><td><span class="sdot" style="background:var(--green)"></span>ROAS</td><td>16.75×</td></tr>
+        <tr><td><span class="sdot" style="background:var(--green)"></span>ROI</td><td>1,576%</td></tr>
+        <tr><td><span class="sdot" style="background:var(--green)"></span>CPA</td><td>₹149.20</td></tr>
+        <tr><td><span class="sdot" style="background:var(--green)"></span>Cost per LPV</td><td>₹1.63</td></tr>
+        <tr><td><span class="sdot" style="background:var(--cyan)"></span>CTR</td><td>0.62%</td></tr>
+        <tr><td><span class="sdot" style="background:var(--cyan)"></span>Frequency</td><td>1.11×</td></tr>
+        <tr><td><span class="sdot" style="background:var(--cyan)"></span>LPV → Confirmed Sale</td><td>1.09%</td></tr>
+        <tr><td><span class="sdot" style="background:var(--amber)"></span>Sale Chance Close Rate</td><td>50% (2/4)</td></tr>
+        <tr><td><span class="sdot" style="background:var(--amber)"></span>Revenue per ₹1 Spent</td><td>₹16.75</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ROW 3 -->
+  <div class="row3">
+
+    <!-- SALE CHANCES PANEL -->
+    <div class="panel r3p1">
+      <div class="panel-title">Sale Chances · 4 Hot Prospects</div>
+
+      <div class="sc-item">
+        <div class="sc-num">01</div>
+        <div class="sc-info">
+          <div class="sc-title">🔥 High-Intent Prospect</div>
+          <div class="sc-desc">Engaged with LP · Expressed strong interest · Active opportunity</div>
+        </div>
+        <div class="sc-right">
+          <div class="sc-val">₹2,499</div>
+          <div class="sc-tag">SALE CHANCE</div>
+        </div>
+      </div>
+
+      <div class="sc-item">
+        <div class="sc-num">02</div>
+        <div class="sc-info">
+          <div class="sc-title">🔥 High-Intent Prospect</div>
+          <div class="sc-desc">Engaged with LP · Expressed strong interest · Active opportunity</div>
+        </div>
+        <div class="sc-right">
+          <div class="sc-val">₹2,499</div>
+          <div class="sc-tag">SALE CHANCE</div>
+        </div>
+      </div>
+
+      <div class="sc-item">
+        <div class="sc-num">03</div>
+        <div class="sc-info">
+          <div class="sc-title">🔥 High-Intent Prospect</div>
+          <div class="sc-desc">Engaged with LP · Expressed strong interest · Active opportunity</div>
+        </div>
+        <div class="sc-right">
+          <div class="sc-val">₹2,499</div>
+          <div class="sc-tag">SALE CHANCE</div>
+        </div>
+      </div>
+
+      <div class="sc-item">
+        <div class="sc-num">04</div>
+        <div class="sc-info">
+          <div class="sc-title">🔥 High-Intent Prospect</div>
+          <div class="sc-desc">Engaged with LP · Expressed strong interest · Active opportunity</div>
+        </div>
+        <div class="sc-right">
+          <div class="sc-val">₹2,499</div>
+          <div class="sc-tag">SALE CHANCE</div>
+        </div>
+      </div>
+
+      <div class="sc-total">
+        <div>
+          <div class="sc-total-label">Max Potential if All 4 Convert</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;font-style:italic;">Active sale chances — not pending, not confirmed</div>
+        </div>
+        <div class="sc-total-val">₹9,996</div>
+      </div>
+    </div>
+
+    <!-- SCALE BARS -->
+    <div class="panel r3p2">
+      <div class="panel-title">Scale Projection</div>
+      <div class="bars-wrap">
+        <div class="bar-col">
+          <div class="bar-body" data-h="7" style="background:linear-gradient(180deg,#10B981,rgba(16,185,129,.2))">
+            <div class="bar-tip">₹5k</div>
+          </div>
+          <div class="bar-label">₹300</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-body" data-h="22" style="background:linear-gradient(180deg,#3B82F6,rgba(59,130,246,.2))">
+            <div class="bar-tip">₹22k</div>
+          </div>
+          <div class="bar-label">₹1.5k</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-body" data-h="44" style="background:linear-gradient(180deg,#3B82F6,rgba(59,130,246,.2))">
+            <div class="bar-tip">₹75k</div>
+          </div>
+          <div class="bar-label">₹5k</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-body" data-h="70" style="background:linear-gradient(180deg,#3B82F6,rgba(59,130,246,.2))">
+            <div class="bar-tip">₹2.2L</div>
+          </div>
+          <div class="bar-label">₹15k</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-body" data-h="100" style="background:linear-gradient(180deg,#3B82F6,rgba(59,130,246,.2))">
+            <div class="bar-tip">₹4.5L</div>
+          </div>
+          <div class="bar-label">₹30k</div>
+        </div>
+      </div>
+      <div class="bars-note">Monthly Ad Spend → Projected Revenue</div>
+    </div>
+
+    <!-- CPA BENCHMARK -->
+    <div class="panel r3p3">
+      <div class="panel-title">CPA vs Industry Benchmark</div>
+      <div class="gauge-shell">
+        <div class="gauge-pos">
+          <svg width="188" height="106" viewBox="0 0 188 106" style="overflow:visible;">
+            <path d="M 18 94 A 76 76 0 0 1 170 94" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="14" stroke-linecap="round"/>
+            <path d="M 18 94 A 76 76 0 0 1 170 94" fill="none" stroke="#10B981" stroke-width="14" stroke-linecap="round"
+              stroke-dasharray="0 238.76" id="gauge-arc"
+              style="transition:stroke-dasharray 2s cubic-bezier(.4,0,.2,1)"/>
+            <text x="14" y="112" fill="var(--muted)" font-size="9" font-family="DM Mono, monospace">₹0</text>
+            <text x="163" y="112" fill="var(--muted)" font-size="9" font-family="DM Mono, monospace">₹2k</text>
+          </svg>
+          <div class="gauge-val-abs">
+            <div class="gv-num">₹149</div>
+            <div class="gv-label">Your CPA</div>
+          </div>
+        </div>
+        <div class="bench-rows">
+          <div class="br">
+            <div class="br-name">Your Campaign</div>
+            <div class="br-track"><div class="br-fill" style="background:var(--green)" data-w="7.5"></div></div>
+            <div class="br-val" style="color:var(--green)">₹149</div>
+          </div>
+          <div class="br">
+            <div class="br-name">Industry Avg</div>
+            <div class="br-track"><div class="br-fill" style="background:var(--amber)" data-w="50"></div></div>
+            <div class="br-val" style="color:var(--amber)">₹1,000</div>
+          </div>
+          <div class="br">
+            <div class="br-name">Industry Max</div>
+            <div class="br-track"><div class="br-fill" style="background:#EF4444" data-w="100"></div></div>
+            <div class="br-val" style="color:#F87171">₹2,000</div>
+          </div>
+        </div>
+        <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:10px 14px;width:100%;text-align:center;">
+          <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--green);">93% Below Industry Max</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">World-class acquisition efficiency</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER STRIP -->
+  <div class="footer">
+    <div class="fstat">
+      <div class="fval">29,506</div>
+      <div class="flabel">Impressions</div>
+    </div>
+    <div class="fstat">
+      <div class="fval">26,550</div>
+      <div class="flabel">Unique Reach</div>
+    </div>
+    <div class="fstat">
+      <div class="fval">183</div>
+      <div class="flabel">Landing Page Views</div>
+    </div>
+    <div class="fstat">
+      <div class="fval" style="color:var(--amber)">4</div>
+      <div class="flabel">Sale Chances</div>
+    </div>
+    <div class="fstat">
+      <div class="fval" style="color:var(--green)">1,576%</div>
+      <div class="flabel">ROI</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function counter(el, end, prefix, suffix, dur) {
+  let n = 0;
+  const inc = end / (dur / 16);
+  const t = setInterval(() => {
+    n = Math.min(n + inc, end);
+    const disp = (end % 1 !== 0) ? n.toFixed(2) : Math.round(n);
+    el.textContent = prefix + disp + suffix;
+    if (n >= end) clearInterval(t);
+  }, 16);
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    counter(document.getElementById('v-roas'), 16.75, '', 'x', 1400);
+    counter(document.getElementById('v-roi'), 1576, '', '%', 1400);
+    counter(document.getElementById('v-rev'), 4998, '₹', '', 1400);
+  }, 150);
+
+  // Funnel bars
+  setTimeout(() => {
+    document.querySelectorAll('.f-fill').forEach(b => { b.style.width = b.dataset.w + '%'; });
+  }, 350);
+
+  // Donut — 50/50 split
+  const C = 2 * Math.PI * 55;
+  const half = C / 2;
+  setTimeout(() => {
+    const d1 = document.getElementById('d1');
+    d1.style.strokeDasharray = `${half - 3} ${half + 3}`;
+    d1.style.strokeDashoffset = '0';
+  }, 400);
+  setTimeout(() => {
+    const d2 = document.getElementById('d2');
+    d2.style.strokeDasharray = `${half - 3} ${half + 3}`;
+    d2.style.strokeDashoffset = `-${half}`;
+  }, 550);
+
+  // Gauge
+  setTimeout(() => {
+    const pct = 149 / 2000;
+    document.getElementById('gauge-arc').style.strokeDasharray = `${238.76 * pct} ${238.76 * (1 - pct)}`;
+  }, 700);
+
+  // Scale bars
+  setTimeout(() => {
+    document.querySelectorAll('.bar-body').forEach(b => { b.style.height = b.dataset.h + '%'; });
+  }, 600);
+
+  // Bench fills
+  setTimeout(() => {
+    document.querySelectorAll('.br-fill').forEach(b => { b.style.width = b.dataset.w + '%'; });
+  }, 700);
+});
+</script>
+</body>
+</html>
